@@ -1,9 +1,11 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.lang.reflect.Array;
-import java.util.*;
 import java.io.IOException;
 import java.lang.Process;
 import java.lang.ProcessBuilder;
 import java.util.concurrent.TimeUnit;
+import java.util.*;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,8 @@ public class Main
                      break;
 
                  case "list":
+                 case "dir":
+                 case "ls":
                     list();
                      break;
 
@@ -93,21 +97,49 @@ public class Main
     private static void list()
     {
         File contents = new File(currentDir);
-        File[] files = contents.listFiles();
-        for(int i = 0; i < files.length; i++)
-        {
-          System.out.println(files[i].getName());
-        }
+            File[] files = contents.listFiles();
+                if(contents.length() > -1)
+                {
+                    for (int i = 0; i < files.length; i++) {
+                        System.out.println(files[i].getName());
+                    }
+                }
     }
 
     private static void cd(String newDir)
     {
-     if(newDir.equals("..") && directory.getParent() != null)
-     {
-         currentDir = directory.getParent();
-         directory = new File(currentDir);
-     }
+      switch (newDir)
+      {
+          case "..":
+          if (directory.getParent() != null)
+          {
+              currentDir = directory.getParent();
+              directory = new File(currentDir);
+          }
+          break;
+          default:
+              isValidFile(newDir);
+              break;
+      }
     }
+
+    private static boolean isValidFile(String newDir)
+    {
+        File contents = new File(currentDir);
+        File[] files = contents.listFiles();
+        for(int i = 0; i < files.length; i++)
+        {
+            if(newDir.equals(files[i].getName()))
+            {
+                currentDir = files[i].getPath();
+                directory = new File(files[i].getPath());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     private static void hist()
     {
