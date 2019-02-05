@@ -22,27 +22,10 @@ public class Main
     public static void main(String[] args)
     {
         System.out.print(currentDir + "]:");
-     while(scanObj.hasNext())
+     while(scanObj.hasNextLine())
      {
-         String string = scanObj.nextLine();
-         history.add(string);
-         ARG = splitCommand(string);
-         command = ARG[iteration];
-             if(command.equals("^") && ARG.length > 1)
-             {
-               int value = Integer.parseInt(ARG[1]);
-               if(value <= history.size() && value != 0)
-               {
-                   ARG = splitCommand(history.get(value -1));
-                   command = ARG[0];
-                   if(command.equals("^"))
-                   {
-                       value = Integer.parseInt(ARG[1]);
-                       command = history.get(value -1);
-                   }
-               }
-             }
 
+             command = getCommand();
              switch (command)
              {
                  case "history":
@@ -74,6 +57,34 @@ public class Main
              }
          System.out.print(currentDir + "]:");
      }
+    }
+
+    private static String getCommand()
+    {
+        String string = scanObj.nextLine();
+        ARG = splitCommand(string);
+        if(ARG.length > 0)
+        {
+            history.add(string);
+            command = ARG[iteration];
+            if (command.equals("^") && ARG.length > 1) {
+                int value = Integer.parseInt(ARG[1]);
+                if (value <= history.size() && value != 0) {
+                    ARG = splitCommand(history.get(value - 1));
+                    command = ARG[0];
+                    if (command.equals("^")) {
+                        value = Integer.parseInt(ARG[1]);
+                        command = history.get(value - 1);
+                    }
+                }
+            }
+        }
+        else
+        {
+            command = "\"\"";
+        }
+
+        return command;
     }
 
     private static void list()
