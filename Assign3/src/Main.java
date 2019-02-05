@@ -52,7 +52,7 @@ public class Main
                      break;
 
                  default:
-                     System.out.println(command+" is not a valid argument");
+                     System.out.println("Invalid command");
                      break;
              }
          System.out.print(currentDir + "]:");
@@ -67,12 +67,15 @@ public class Main
         {
             history.add(string);
             command = ARG[iteration];
-            if (command.equals("^") && ARG.length > 1) {
+            if (command.equals("^") && ARG.length > 1)
+            {
                 int value = Integer.parseInt(ARG[1]);
-                if (value <= history.size() && value != 0) {
+                if (value <= history.size() && value != 0)
+                {
                     ARG = splitCommand(history.get(value - 1));
                     command = ARG[0];
-                    if (command.equals("^")) {
+                    if (command.equals("^"))
+                    {
                         value = Integer.parseInt(ARG[1]);
                         command = history.get(value - 1);
                     }
@@ -99,7 +102,11 @@ public class Main
 
     private static void cd(String newDir)
     {
-
+     if(newDir.equals("..") && directory.getParent() != null)
+     {
+         currentDir = directory.getParent();
+         directory = new File(currentDir);
+     }
     }
 
     private static void hist()
