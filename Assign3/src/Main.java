@@ -21,8 +21,10 @@ public class Main
     private static int iteration = 0;
     private static String command = "";
 
+
     public static void main(String[] args)
     {
+
         System.out.print(currentDir + "]:");
      while(scanObj.hasNextLine())
      {
@@ -41,13 +43,19 @@ public class Main
                      break;
 
                  case "cd":
+                 case "CD":
+                 case "..":
                      if(ARG.length > 1)
                      {
                          cd(ARG[1]);
                      }
+                     else if(command.equals(".."))
+                     {
+                         cd(ARG[0]);
+                     }
                      else
                      {
-                         System.out.println(currentDir + "\n");
+                         cd(prop.getProperty("user.home"));
                      }
                      break;
 
@@ -56,7 +64,7 @@ public class Main
                      break;
 
                  default:
-                     System.out.println("Invalid command");
+                     System.out.println("Invalid command: " + command);
                      break;
              }
          System.out.print(currentDir + "]:");
@@ -98,12 +106,24 @@ public class Main
     {
         File contents = new File(currentDir);
             File[] files = contents.listFiles();
-                if(contents.length() > -1)
+            if(contents.isDirectory())
+            {
+                if(contents.list().length>0)
                 {
                     for (int i = 0; i < files.length; i++) {
                         System.out.println(files[i].getName());
                     }
                 }
+                else
+                {
+                    System.out.println("Empty");
+                }
+            }
+            else
+            {
+                System.out.println(contents.getName() +" is not a valid directory");
+            }
+
     }
 
     private static void cd(String newDir)
@@ -125,15 +145,21 @@ public class Main
 
     private static boolean isValidFile(String newDir)
     {
-        File contents = new File(currentDir);
-        File[] files = contents.listFiles();
-        for(int i = 0; i < files.length; i++)
+        if(newDir.equals(prop.getProperty("user.home")))
         {
-            if(newDir.equals(files[i].getName()))
-            {
-                currentDir = files[i].getPath();
-                directory = new File(files[i].getPath());
-                return true;
+            currentDir = prop.getProperty("user.home");
+            directory = new File(prop.getProperty("user.home"));
+        }
+        else
+        {
+            File contents = new File(currentDir);
+            File[] files = contents.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (newDir.equals(files[i].getName())) {
+                    currentDir = files[i].getPath();
+                    directory = new File(files[i].getPath());
+                    return true;
+                }
             }
         }
 
