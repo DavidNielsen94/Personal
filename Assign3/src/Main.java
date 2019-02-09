@@ -4,11 +4,13 @@ import java.lang.reflect.Array;
 import java.io.IOException;
 import java.lang.Process;
 import java.lang.ProcessBuilder;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.*;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class Main
 {
@@ -20,7 +22,7 @@ public class Main
     private static String[] ARG;
     private static int iteration = 0;
     private static String command = "";
-
+    private static SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm");
 
     public static void main(String[] args)
     {
@@ -28,20 +30,17 @@ public class Main
         System.out.print(currentDir + "]:");
      while(scanObj.hasNextLine())
      {
-
              command = getCommand();
              switch (command)
              {
                  case "history":
                      hist();
                      break;
-
                  case "list":
                  case "dir":
                  case "ls":
                     list();
                      break;
-
                  case "cd":
                  case "CD":
                  case "..":
@@ -62,13 +61,27 @@ public class Main
                  case "exit":
                      System.exit(1);
                      break;
-
+                 case "^":
+                     System.out.println("Invalid argument for ^");
+                     break;
                  default:
                      System.out.println("Invalid command: " + command);
                      break;
              }
          System.out.print(currentDir + "]:");
      }
+    }
+
+    private static boolean checkIfInt(String str)
+    {
+        for(int i = 0; i < str.length();i++)
+        {
+            if(str.charAt(i) < '0' || '9' <str.charAt(i))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static String getCommand()
@@ -79,7 +92,7 @@ public class Main
         {
             history.add(string);
             command = ARG[iteration];
-            if (command.equals("^") && ARG.length > 1)
+            if ((command.equals("^") && ARG.length > 1) && checkIfInt(ARG[1]))
             {
                 int value = Integer.parseInt(ARG[1]);
                 if (value <= history.size() && value != 0)
@@ -111,7 +124,7 @@ public class Main
                 if(contents.list().length>0)
                 {
                     for (int i = 0; i < files.length; i++) {
-                        System.out.println(files[i].getName());
+                        System.out.println(sdf.format(files[i].lastModified())+" " +files[i].getName());
                     }
                 }
                 else
@@ -170,7 +183,7 @@ public class Main
     private static void hist()
     {
         int size = history.size();
-        System.out.println("-- Command History --");
+        System.out.println("-- Command History --" + "\n" + "Items: "+history.size());
         for(int i = 0; i < size; i++)
         {
             System.out.println(i+1 + " : " + history.get(i));
